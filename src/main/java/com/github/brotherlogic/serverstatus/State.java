@@ -22,13 +22,19 @@ public class State {
 	public Collection<Job> getJobs() {
 		return jobs.values();
 	}
+	
+	private Calendar convertTime(long time) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(time*1000);
+		return cal;
+	}
 
 	public void update(RegistryEntry entry) {
 		if (jobs.containsKey(entry.getName())) {
-			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), Calendar.getInstance());
+			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), convertTime(entry.getRegisterTime()));
 		} else {
 			jobs.put(entry.getName(), new Job(entry.getName()));
-			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), Calendar.getInstance());
+			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), convertTime(entry.getRegisterTime()));
 		}
 	}
 
@@ -59,14 +65,9 @@ class Job {
 		return jobName;
 	}
 
-	public Calendar getMaxUptime() {
-		Calendar ret = null;
-		for (Calendar cal : instanceAndUptime.values()) {
-			if (ret == null || cal.before(ret)) {
-				ret = cal;
-			}
-		}
-		return ret;
+	public String getUptime(Address a) {
+		long seconds = (Calendar.getInstance().getTimeInMillis() - instanceAndUptime.get(a).getTimeInMillis()) / 1000;
+		return "" + seconds;
 	}
 }
 

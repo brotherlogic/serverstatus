@@ -29,7 +29,7 @@ public class Display extends JFrame {
 			panel.add(label);
 			
 			for (Address addr : j.getAddresses()) {
-				JLabel inLabel = new JLabel(addr.toString());
+				JLabel inLabel = new JLabel(addr.toString() + ": " + j.getUptime(addr));
 				inLabel.setHorizontalAlignment(JLabel.RIGHT);
 				panel.add(inLabel);
 			}
