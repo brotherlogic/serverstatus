@@ -22,19 +22,21 @@ public class State {
 	public Collection<Job> getJobs() {
 		return jobs.values();
 	}
-	
+
 	private Calendar convertTime(long time) {
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(time*1000);
+		cal.setTimeInMillis(time * 1000);
 		return cal;
 	}
 
 	public void update(RegistryEntry entry) {
 		if (jobs.containsKey(entry.getName())) {
-			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), convertTime(entry.getRegisterTime()));
+			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()),
+					convertTime(entry.getRegisterTime()));
 		} else {
 			jobs.put(entry.getName(), new Job(entry.getName()));
-			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), convertTime(entry.getRegisterTime()));
+			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()),
+					convertTime(entry.getRegisterTime()));
 		}
 	}
 
@@ -52,7 +54,7 @@ class Job {
 		jobName = name;
 		instanceAndUptime = new HashMap<Address, Calendar>();
 	}
-	
+
 	public Collection<Address> getAddresses() {
 		return instanceAndUptime.keySet();
 	}
@@ -79,7 +81,8 @@ class Address {
 		this.ip = ip;
 		this.port = port;
 	}
-	
+
+	@Override
 	public String toString() {
 		return ip + ":" + port;
 	}

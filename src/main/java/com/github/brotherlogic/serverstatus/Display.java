@@ -13,27 +13,29 @@ public class Display extends JFrame {
 
 	public Display(String bServer) {
 		m = new Model(bServer);
+		this.getRootPane().setLayout(new GridLayout(0, 2));
 	}
 
 	public void showModel() {
+		System.out.println("Updating model");
 		m.update();
+		this.getRootPane().removeAll();
 		int numberOfJobs = m.getNumberOfJobs();
-		this.getRootPane().setLayout(new GridLayout(0, 2));
 
 		int counter = 0;
 		for (Job j : m.getJobs()) {
 			JPanel panel = new JPanel();
-			panel.setLayout(new GridLayout(0,1));
+			panel.setLayout(new GridLayout(0, 1));
 			JLabel label = new JLabel(j.getName());
 			label.setHorizontalAlignment(JLabel.LEFT);
 			panel.add(label);
-			
+
 			for (Address addr : j.getAddresses()) {
 				JLabel inLabel = new JLabel(addr.toString() + ": " + j.getUptime(addr));
 				inLabel.setHorizontalAlignment(JLabel.RIGHT);
 				panel.add(inLabel);
 			}
-			
+
 			this.getRootPane().add(panel);
 		}
 
@@ -48,12 +50,27 @@ public class Display extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.revalidate();
 		this.setVisible(true);
+
+		Thread updater = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					showModel();
+				}
+			}
+		});
+		updater.start();
 	}
 
 	public static void main(String[] args) {
 		Display d = new Display(args[0]);
 		d.run();
-		d.showModel();
 	}
 
 }
