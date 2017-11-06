@@ -46,6 +46,10 @@ class Job {
 		jobName = name;
 		instanceAndUptime = new HashMap<Address, Calendar>();
 	}
+	
+	public Collection<Address> getAddresses() {
+		return instanceAndUptime.keySet();
+	}
 
 	public void setUptime(Address addr, Calendar upTime) {
 		instanceAndUptime.put(addr, upTime);
@@ -73,5 +77,9 @@ class Address {
 	public Address(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
+	}
+	
+	public String toString() {
+		return ip + ":" + port;
 	}
 }

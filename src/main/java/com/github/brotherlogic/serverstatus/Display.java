@@ -23,7 +23,17 @@ public class Display extends JFrame {
 		int counter = 0;
 		for (Job j : m.getJobs()) {
 			JPanel panel = new JPanel();
-			panel.add(new JLabel(j.getName()));
+			panel.setLayout(new GridLayout(0,1));
+			JLabel label = new JLabel(j.getName());
+			label.setHorizontalAlignment(JLabel.LEFT);
+			panel.add(label);
+			
+			for (Address addr : j.getAddresses()) {
+				JLabel inLabel = new JLabel(addr.toString());
+				inLabel.setHorizontalAlignment(JLabel.RIGHT);
+				panel.add(inLabel);
+			}
+			
 			this.getRootPane().add(panel);
 		}
 
