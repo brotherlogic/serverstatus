@@ -1,22 +1,40 @@
 package com.github.brotherlogic.serverstatus;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import discovery.Discovery.RegistryEntry;
 
 public class State {
-	private List<Job> jobs;
+	private Map<String, Job> jobs;
 
 	public State() {
-		jobs = new LinkedList<Job>();
+		jobs = new TreeMap<String, Job>();
+	}
+
+	public int getNumberOfJobs() {
+		return jobs.size();
+	}
+
+	public Collection<Job> getJobs() {
+		return jobs.values();
 	}
 
 	public void update(RegistryEntry entry) {
+		if (jobs.containsKey(entry.getName())) {
+			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), Calendar.getInstance());
+		} else {
+			jobs.put(entry.getName(), new Job(entry.getName()));
+			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()), Calendar.getInstance());
+		}
+	}
 
+	@Override
+	public String toString() {
+		return jobs.toString();
 	}
 }
 
