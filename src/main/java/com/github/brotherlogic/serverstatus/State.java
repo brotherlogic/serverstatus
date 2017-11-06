@@ -6,31 +6,37 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import discovery.Discovery.RegistryEntry;
+
 public class State {
 	private List<Job> jobs;
-	
+
 	public State() {
 		jobs = new LinkedList<Job>();
+	}
+
+	public void update(RegistryEntry entry) {
+
 	}
 }
 
 class Job {
 	private String jobName;
 	private Map<Address, Calendar> instanceAndUptime;
-	
+
 	public Job(String name) {
 		jobName = name;
 		instanceAndUptime = new HashMap<Address, Calendar>();
 	}
-	
+
 	public void setUptime(Address addr, Calendar upTime) {
 		instanceAndUptime.put(addr, upTime);
 	}
-	
+
 	public String getName() {
 		return jobName;
 	}
-	
+
 	public Calendar getMaxUptime() {
 		Calendar ret = null;
 		for (Calendar cal : instanceAndUptime.values()) {
@@ -45,7 +51,7 @@ class Job {
 class Address {
 	private String ip;
 	private int port;
-	
+
 	public Address(String ip, int port) {
 		this.ip = ip;
 		this.port = port;

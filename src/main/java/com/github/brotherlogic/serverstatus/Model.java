@@ -1,21 +1,21 @@
 package com.github.brotherlogic.serverstatus;
 
-import server.ServerOuterClass.Empty;
+import discovery.Discovery.RegistryEntry;
+import discovery.Discovery.ServiceList;
+import discovery.DiscoveryServiceGrpc;
 
-public class Model extends NetworkObject{
+public class Model extends NetworkObject {
 	State s;
-	
-	//Updates the state of the system
+
+	// Updates the state of the system
 	private void updateState() {
-		DiscoverServiceGrpc.DiscoverServiceBlockingStub service = DiscoverServiceGrpc.NewBlockingStub(dial("discover"));
-		serviceList = service.ListAllServices(Empty.newBuilder().build());
-		
-		for(RegistryEntry entry : serviceList.getServices()) {
-			GoServerServiceGrpc.GoServiceBlockingStub server = GoServerServiceGrpc.NewBlockingStub(dial(entry));
-			alive = server.IsAlive(Empty.newBuilder().build());
-			
-			s.update(entry,alive);
+		DiscoveryServiceGrpc.DiscoveryServiceBlockingStub service = DiscoveryServiceGrpc
+				.NewBlockingStub(dial("discover"));
+		ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
+
+		for (RegistryEntry entry : serviceList.getServicesList()) {
+			s.update(entry);
 		}
 	}
-	
+
 }
