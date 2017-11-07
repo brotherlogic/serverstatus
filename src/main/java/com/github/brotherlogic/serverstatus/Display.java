@@ -68,9 +68,4 @@ public class Display extends JFrame {
 		updater.start();
 	}
 
-	public static void main(String[] args) {
-		Display d = new Display(args[0]);
-		d.run();
-	}
-
 }
