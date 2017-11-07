@@ -2,7 +2,6 @@ package com.github.brotherlogic.serverstatus;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -52,7 +51,7 @@ class Job {
 
 	public Job(String name) {
 		jobName = name;
-		instanceAndUptime = new HashMap<Address, Calendar>();
+		instanceAndUptime = new TreeMap<Address, Calendar>();
 	}
 
 	public Collection<Address> getAddresses() {
@@ -73,7 +72,15 @@ class Job {
 	}
 }
 
-class Address {
+class Address implements Comparable<Address> {
+	@Override
+	public int compareTo(Address o) {
+		int val = ip.compareTo(o.ip);
+		if (val == 0)
+			val = o.port - port;
+		return val;
+	}
+
 	private String ip;
 	private int port;
 
