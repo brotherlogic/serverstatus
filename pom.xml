@@ -182,7 +182,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.github.brotherlogic.serverstatus.Display</mainClass>
+              <mainClass>com.github.brotherlogic.serverstatus.Server</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
