@@ -39,6 +39,7 @@ public class Model extends NetworkObject {
 		for (RegistryEntry entry : serviceList.getServicesList()) {
 			s.update(entry);
 		}
+		s.clean();
 	}
 
 	public static void main(String[] args) {

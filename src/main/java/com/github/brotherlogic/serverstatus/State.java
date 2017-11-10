@@ -2,6 +2,8 @@ package com.github.brotherlogic.serverstatus;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -43,15 +45,22 @@ public class State {
 	public String toString() {
 		return jobs.toString();
 	}
+
+	public void clean() {
+		for (Job j : jobs.values())
+			j.clean();
+	}
 }
 
 class Job {
 	private String jobName;
 	private Map<Address, Calendar> instanceAndUptime;
+	private Map<Address, Long> lastUpdate;
 
 	public Job(String name) {
 		jobName = name;
 		instanceAndUptime = new TreeMap<Address, Calendar>();
+		lastUpdate = new TreeMap<Address, Long>();
 	}
 
 	public Collection<Address> getAddresses() {
@@ -60,6 +69,7 @@ class Job {
 
 	public void setUptime(Address addr, Calendar upTime) {
 		instanceAndUptime.put(addr, upTime);
+		lastUpdate.put(addr, System.currentTimeMillis());
 	}
 
 	public String getName() {
@@ -69,6 +79,20 @@ class Job {
 	public String getUptime(Address a) {
 		long seconds = (Calendar.getInstance().getTimeInMillis() - instanceAndUptime.get(a).getTimeInMillis()) / 1000;
 		return "" + seconds;
+	}
+
+	public void clean() {
+		List<Address> addresses = new LinkedList<Address>();
+		for (Address a : lastUpdate.keySet()) {
+			if (System.currentTimeMillis() - lastUpdate.get(a) > 60 * 1000) {
+				addresses.add(a);
+			}
+		}
+
+		for (Address a : addresses) {
+			instanceAndUptime.remove(a);
+			lastUpdate.remove(a);
+		}
 	}
 }
 
