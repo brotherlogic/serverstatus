@@ -1,6 +1,7 @@
 package com.github.brotherlogic.serverstatus;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import com.github.brotherlogic.javaserver.NetworkObject;
 
@@ -33,11 +34,16 @@ public class Model extends NetworkObject {
 	// Updates the state of the system
 	private void updateState() {
 		DiscoveryServiceGrpc.DiscoveryServiceBlockingStub service = DiscoveryServiceGrpc
-				.newBlockingStub(dial(bServer, "discovery"));
-		ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
+				.newBlockingStub(dial(bServer, "discovery")).withDeadlineAfter(1, TimeUnit.SECONDS);
+		try {
+			ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
 
-		for (RegistryEntry entry : serviceList.getServicesList()) {
-			s.update(entry);
+			for (RegistryEntry entry : serviceList.getServicesList()) {
+				s.update(entry);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Just cleaning then I guess");
 		}
 		s.clean();
 	}
