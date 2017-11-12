@@ -78,6 +78,15 @@ class Job {
 
 	public String getUptime(Address a) {
 		long seconds = (Calendar.getInstance().getTimeInMillis() - instanceAndUptime.get(a).getTimeInMillis()) / 1000;
+
+		if (seconds > 60 * 60 * 24) {
+			return seconds / (60 * 60 * 24) + "d";
+		} else if (seconds > 60 * 60) {
+			return seconds / (60 * 60) + "h";
+		} else if (seconds > 60) {
+			return seconds / 60 + "m";
+		}
+
 		return "" + seconds;
 	}
 
