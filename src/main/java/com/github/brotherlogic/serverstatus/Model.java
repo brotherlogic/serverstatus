@@ -8,6 +8,7 @@ import com.github.brotherlogic.javaserver.NetworkObject;
 import discovery.Discovery.RegistryEntry;
 import discovery.Discovery.ServiceList;
 import discovery.DiscoveryServiceGrpc;
+import io.grpc.ManagedChannel;
 
 public class Model extends NetworkObject {
 	State s = new State();
@@ -33,19 +34,28 @@ public class Model extends NetworkObject {
 
 	// Updates the state of the system
 	private void updateState() {
+		ManagedChannel c = dial(bServer, "discovery");
 		DiscoveryServiceGrpc.DiscoveryServiceBlockingStub service = DiscoveryServiceGrpc
-				.newBlockingStub(dial(bServer, "discovery")).withDeadlineAfter(1, TimeUnit.SECONDS);
+				.newBlockingStub(c).withDeadlineAfter(1, TimeUnit.SECONDS);
 		try {
 			ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
 
 			for (RegistryEntry entry : serviceList.getServicesList()) {
 				s.update(entry);
 			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Just cleaning then I guess");
 		}
 		s.clean();
+		
+		try {
+			c.shutdown().awaitTermination(5, TimeUnit.SECONDS)
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
