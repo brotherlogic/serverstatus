@@ -52,7 +52,7 @@ public class Model extends NetworkObject {
 		s.clean();
 		
 		try {
-			c.shutdown().awaitTermination(5, TimeUnit.SECONDS)
+			c.shutdown().awaitTermination(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
