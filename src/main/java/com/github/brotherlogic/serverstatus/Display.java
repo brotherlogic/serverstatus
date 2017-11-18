@@ -1,6 +1,7 @@
 package com.github.brotherlogic.serverstatus;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JFrame;
@@ -32,6 +33,12 @@ public class Display extends JFrame {
 
 			for (Address addr : j.getAddresses()) {
 				JLabel inLabel = new JLabel(addr.toString() + ": " + j.getUptime(addr));
+				Font f = inLabel.getFont();
+				if (j.isMaster(addr)) {
+					inLabel.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
+				} else {
+					label.setFont(f.deriveFont(f.getStyle() & ~Font.BOLD));
+				}
 				inLabel.setHorizontalAlignment(JLabel.RIGHT);
 				panel.add(inLabel);
 			}

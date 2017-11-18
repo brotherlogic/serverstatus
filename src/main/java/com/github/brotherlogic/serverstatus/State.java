@@ -33,11 +33,11 @@ public class State {
 	public void update(RegistryEntry entry) {
 		if (jobs.containsKey(entry.getName())) {
 			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()),
-					convertTime(entry.getRegisterTime()));
+					convertTime(entry.getRegisterTime()), entry.getMaster());
 		} else {
 			jobs.put(entry.getName(), new Job(entry.getName()));
 			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()),
-					convertTime(entry.getRegisterTime()));
+					convertTime(entry.getRegisterTime()), entry.getMaster());
 		}
 	}
 
@@ -56,24 +56,31 @@ class Job {
 	private String jobName;
 	private Map<Address, Calendar> instanceAndUptime;
 	private Map<Address, Long> lastUpdate;
+	private Map<Address, Boolean> masterMap;
 
 	public Job(String name) {
 		jobName = name;
 		instanceAndUptime = new TreeMap<Address, Calendar>();
 		lastUpdate = new TreeMap<Address, Long>();
+		masterMap = new TreeMap<Address, Boolean>();
 	}
 
 	public Collection<Address> getAddresses() {
 		return instanceAndUptime.keySet();
 	}
 
-	public void setUptime(Address addr, Calendar upTime) {
+	public void setUptime(Address addr, Calendar upTime, boolean master) {
 		instanceAndUptime.put(addr, upTime);
 		lastUpdate.put(addr, System.currentTimeMillis());
+		masterMap.put(addr, master);
 	}
 
 	public String getName() {
 		return jobName;
+	}
+
+	public boolean isMaster(Address a) {
+		return masterMap.get(a);
 	}
 
 	public String getUptime(Address a) {
@@ -101,6 +108,7 @@ class Job {
 		for (Address a : addresses) {
 			instanceAndUptime.remove(a);
 			lastUpdate.remove(a);
+			masterMap.remove(a);
 		}
 	}
 }
