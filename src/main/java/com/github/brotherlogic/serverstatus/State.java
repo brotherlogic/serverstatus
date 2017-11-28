@@ -30,14 +30,17 @@ public class State {
 		return cal;
 	}
 
-	public void update(RegistryEntry entry) {
+	public boolean update(RegistryEntry entry, String special) {
+		Address a = new Address(entry.getIp(), entry.getPort());
 		if (jobs.containsKey(entry.getName())) {
-			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()),
-					convertTime(entry.getRegisterTime()), entry.getMaster());
+			jobs.get(entry.getName()).setUptime(a, convertTime(entry.getRegisterTime()), entry.getMaster());
+			jobs.get(entry.getName()).setSpecial(a, special);
+			return true;
 		} else {
 			jobs.put(entry.getName(), new Job(entry.getName()));
-			jobs.get(entry.getName()).setUptime(new Address(entry.getIp(), entry.getPort()),
-					convertTime(entry.getRegisterTime()), entry.getMaster());
+			jobs.get(entry.getName()).setUptime(a, convertTime(entry.getRegisterTime()), entry.getMaster());
+			jobs.get(entry.getName()).setSpecial(a, special);
+			return false;
 		}
 	}
 
@@ -57,12 +60,14 @@ class Job {
 	private Map<Address, Calendar> instanceAndUptime;
 	private Map<Address, Long> lastUpdate;
 	private Map<Address, Boolean> masterMap;
+	private Map<Address, String> specialMap;
 
 	public Job(String name) {
 		jobName = name;
 		instanceAndUptime = new TreeMap<Address, Calendar>();
 		lastUpdate = new TreeMap<Address, Long>();
 		masterMap = new TreeMap<Address, Boolean>();
+		specialMap = new TreeMap<Address, String>();
 	}
 
 	public Collection<Address> getAddresses() {
@@ -75,8 +80,23 @@ class Job {
 		masterMap.put(addr, master);
 	}
 
+	public void setSpecial(Address addr, String special) {
+		if (special == null) {
+			specialMap.remove(addr);
+		} else {
+			specialMap.put(addr, special);
+		}
+	}
+
 	public String getName() {
 		return jobName;
+	}
+
+	public String getSpecial(Address a) {
+		if (specialMap.containsKey(a)) {
+			return specialMap.get(a);
+		}
+		return null;
 	}
 
 	public boolean isMaster(Address a) {
