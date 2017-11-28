@@ -1,5 +1,5 @@
 if ping -c 1 www.github.com > /dev/null 2>&1 ; then
-    git fetch -p
+    git fetch -p > /dev/null 2>&1
     git merge origin/master
     git gc
     rm serverstatus.jar
