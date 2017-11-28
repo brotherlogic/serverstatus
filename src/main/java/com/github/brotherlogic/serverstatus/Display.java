@@ -32,7 +32,11 @@ public class Display extends JFrame {
 			panel.add(label);
 
 			for (Address addr : j.getAddresses()) {
-				JLabel inLabel = new JLabel(addr.toString() + ": " + j.getUptime(addr));
+				String text = addr.toString() + ": " + j.getUptime(addr);
+				if (j.getSpecial(addr) != null) {
+					text += " [" + j.getSpecial(addr) + " ]";
+				}
+				JLabel inLabel = new JLabel(text);
 				Font f = inLabel.getFont();
 				if (j.isMaster(addr)) {
 					inLabel.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
