@@ -33,6 +33,7 @@ public class Display extends JFrame {
 
 			for (Address addr : j.getAddresses()) {
 				String text = addr.toString() + ": " + j.getUptime(addr);
+				System.out.println(j.getName() + " => " + j.getSpecial(addr));
 				if (j.getSpecial(addr) != null) {
 					text += " [" + j.getSpecial(addr) + " ]";
 				}

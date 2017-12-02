@@ -40,9 +40,14 @@ public class Model extends NetworkObject {
 						ManagedChannelBuilder.forAddress(entry.getIp(), entry.getPort()).usePlaintext(true).build())
 				.withDeadlineAfter(1, TimeUnit.SECONDS);
 		goserver.Goserver.ServerState state = service.state(goserver.Goserver.Empty.newBuilder().build());
+		System.out.println("HERE => " + state.getStatesList());
 		for (goserver.Goserver.State st : state.getStatesList()) {
 			if (st.getKey().equals("core")) {
+                          if (st.getTimeValue() > 0) {
 				s.update(entry, st.getTimeValue() + "");
+                          } else {
+                            s.update(entry, st.getValue() + "");
+                          }
 			}
 		}
 

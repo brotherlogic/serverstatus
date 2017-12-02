@@ -34,12 +34,14 @@ public class State {
 		Address a = new Address(entry.getIp(), entry.getPort());
 		if (jobs.containsKey(entry.getName())) {
 			jobs.get(entry.getName()).setUptime(a, convertTime(entry.getRegisterTime()), entry.getMaster());
-			jobs.get(entry.getName()).setSpecial(a, special);
+                        if (special != null && !special.equals(""))
+                          jobs.get(entry.getName()).setSpecial(a, special);
 			return true;
 		} else {
 			jobs.put(entry.getName(), new Job(entry.getName()));
 			jobs.get(entry.getName()).setUptime(a, convertTime(entry.getRegisterTime()), entry.getMaster());
-			jobs.get(entry.getName()).setSpecial(a, special);
+                        if (special != null && !special.equals(""))
+                          jobs.get(entry.getName()).setSpecial(a, special);
 			return false;
 		}
 	}
