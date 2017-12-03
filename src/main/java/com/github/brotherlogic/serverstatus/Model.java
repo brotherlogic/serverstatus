@@ -39,6 +39,7 @@ public class Model extends NetworkObject {
 				.newBlockingStub(
 						ManagedChannelBuilder.forAddress(entry.getIp(), entry.getPort()).usePlaintext(true).build())
 				.withDeadlineAfter(1, TimeUnit.SECONDS);
+                try{
 		goserver.Goserver.ServerState state = service.state(goserver.Goserver.Empty.newBuilder().build());
 		System.out.println("HERE => " + state.getStatesList());
 		for (goserver.Goserver.State st : state.getStatesList()) {
@@ -50,6 +51,10 @@ public class Model extends NetworkObject {
                           }
 			}
 		}
+                } catch (Exception e){
+                  System.out.println("Skipping update");
+                  e.printStackTrace();
+                }
 
 	}
 
