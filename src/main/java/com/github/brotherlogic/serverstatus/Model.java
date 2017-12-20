@@ -35,9 +35,10 @@ public class Model extends NetworkObject {
 	}
 
 	private void updateState(RegistryEntry entry) throws Exception {
+		ManagedChannel c = ManagedChannelBuilder.forAddress(entry.getIp(), entry.getPort()).usePlaintext(true).build();
 		goserverServiceGrpc.goserverServiceBlockingStub service = goserverServiceGrpc
 				.newBlockingStub(
-						ManagedChannelBuilder.forAddress(entry.getIp(), entry.getPort()).usePlaintext(true).build())
+						c)
 				.withDeadlineAfter(1, TimeUnit.SECONDS);
                 try{
 		goserver.Goserver.ServerState state = service.state(goserver.Goserver.Empty.newBuilder().build());
@@ -55,6 +56,13 @@ public class Model extends NetworkObject {
                   System.out.println("Skipping update");
                   e.printStackTrace();
                 }
+
+
+										try {
+											c.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
 
 	}
 
