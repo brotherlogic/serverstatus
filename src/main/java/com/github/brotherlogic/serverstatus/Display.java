@@ -18,7 +18,6 @@ public class Display extends JFrame {
 	}
 
 	public void showModel() {
-		System.out.println("Updating model");
 		m.update();
 		this.getRootPane().removeAll();
 		int numberOfJobs = m.getNumberOfJobs();
@@ -33,7 +32,6 @@ public class Display extends JFrame {
 
 			for (Address addr : j.getAddresses()) {
 				String text = addr.toString() + ": " + j.getUptime(addr);
-				System.out.println(j.getName() + " => " + j.getSpecial(addr));
 				if (j.getSpecial(addr) != null) {
 					text += " [" + j.getSpecial(addr) + " ]";
 				}
@@ -51,7 +49,6 @@ public class Display extends JFrame {
 			this.getRootPane().add(panel);
 		}
 
-		System.out.println("Shown " + m.getJobs().size() + " Jobs");
 		this.revalidate();
 	}
 
