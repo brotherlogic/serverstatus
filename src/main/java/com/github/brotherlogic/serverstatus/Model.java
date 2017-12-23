@@ -11,6 +11,8 @@ import discovery.DiscoveryServiceGrpc;
 import goserver.goserverServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import java.util.logging.LogManager;
+import java.util.logging.Level;
 
 public class Model extends NetworkObject {
 	State s = new State();
@@ -31,7 +33,6 @@ public class Model extends NetworkObject {
 
 	public void update() {
 		updateState();
-		System.out.println("STATE = " + s);
 	}
 
 	private void updateState(RegistryEntry entry) throws Exception {
@@ -42,7 +43,6 @@ public class Model extends NetworkObject {
 				.withDeadlineAfter(1, TimeUnit.SECONDS);
                 try{
 		goserver.Goserver.ServerState state = service.state(goserver.Goserver.Empty.newBuilder().build());
-		System.out.println("HERE => " + state.getStatesList());
 		for (goserver.Goserver.State st : state.getStatesList()) {
 			if (st.getKey().equals("core")) {
                           if (st.getTimeValue() > 0) {
@@ -53,7 +53,6 @@ public class Model extends NetworkObject {
 			}
 		}
                 } catch (Exception e){
-                  System.out.println("Skipping update");
                   e.printStackTrace();
                 }
 
@@ -77,7 +76,6 @@ public class Model extends NetworkObject {
 			for (final RegistryEntry entry : serviceList.getServicesList()) {
 				boolean exists = s.update(entry, null);
 				if (!exists) {
-					System.out.println("Starting update thread for " + entry);
 					Thread updater = new Thread(new Runnable() {
 						@Override
 						public void run() {
@@ -97,7 +95,6 @@ public class Model extends NetworkObject {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Just cleaning then I guess");
 		}
 		s.clean();
 

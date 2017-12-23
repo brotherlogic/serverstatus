@@ -7,6 +7,8 @@ import com.github.brotherlogic.javaserver.JavaServer;
 
 import io.grpc.BindableService;
 
+import java.util.logging.LogManager;
+
 public class Server extends JavaServer {
 
 	Display d;
