@@ -83,7 +83,7 @@
     <dependency>
       <groupId>com.github.brotherlogic.javaserver</groupId>
       <artifactId>javaserver</artifactId>
-      <version>0.45</version>
+      <version>0.46</version>
     </dependency>
     <dependency>
       <groupId>com.drewnoakes</groupId>
