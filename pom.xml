@@ -5,7 +5,7 @@
   <groupId>com.github.brotherlogic.serverstatus</groupId>
   <artifactId>serverstatus</artifactId>
   <packaging>jar</packaging>
-  <version>0.23-SNAPSHOT</version>
+  <version>0.23</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Interface for displaying server state</description>
@@ -51,7 +51,7 @@
     <connection>scm:git:git@github.com:brotherogic/serverstatus.git</connection>
     <developerConnection>scm:git:git@github.com:brotherlogic/serverstatus.git</developerConnection>
     <url>git@github.com:brotherlogic/serverstatus.git</url>
-    <tag>HEAD</tag>
+    <tag>serverstatus-0.23</tag>
   </scm>
 
   <prerequisites>
