@@ -30,14 +30,14 @@ public class Display extends JFrame {
 			label.setHorizontalAlignment(JLabel.LEFT);
 			panel.add(label);
 
-			for (Address addr : j.getAddresses()) {
-				String text = addr.toString() + ": " + j.getUptime(addr);
-				if (j.getSpecial(addr) != null) {
-					text += " [" + j.getSpecial(addr) + " ]";
+			for (Instance inst : j.getInstances()) {
+				String text = inst.getEntry().getIdentifier() + "@" + inst.getEntry().getPort() + ": " + inst.getUptime();
+				if (inst.getSpecial() != null) {
+					text += " [" + inst.getSpecial() + " ]";
 				}
 				JLabel inLabel = new JLabel(text);
 				Font f = inLabel.getFont();
-				if (j.isMaster(addr)) {
+				if (inst.isMaster()) {
 					inLabel.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
 				} else {
 					label.setFont(f.deriveFont(f.getStyle() & ~Font.BOLD));
