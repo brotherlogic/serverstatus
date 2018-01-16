@@ -35,35 +35,6 @@ public class Model extends NetworkObject {
 		updateState();
 	}
 
-	private void updateState(RegistryEntry entry) throws Exception {
-		ManagedChannel c = ManagedChannelBuilder.forAddress(entry.getIp(), entry.getPort()).usePlaintext(true).build();
-		goserverServiceGrpc.goserverServiceBlockingStub service = goserverServiceGrpc
-				.newBlockingStub(
-						c)
-				.withDeadlineAfter(1, TimeUnit.SECONDS);
-                try{
-		goserver.Goserver.ServerState state = service.state(goserver.Goserver.Empty.newBuilder().build());
-		for (goserver.Goserver.State st : state.getStatesList()) {
-			if (st.getKey().equals("core")) {
-                          if (st.getTimeValue() > 0) {
-				s.update(entry, st.getTimeValue() + "");
-                          } else {
-                            s.update(entry, st.getValue() + "");
-                          }
-			}
-		}
-                } catch (Exception e){
-                  e.printStackTrace();
-                }
-
-
-										try {
-											c.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-
-	}
 
 	// Updates the state of the system
 	private void updateState() {
@@ -74,29 +45,12 @@ public class Model extends NetworkObject {
 			ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
 
 			for (final RegistryEntry entry : serviceList.getServicesList()) {
-				boolean exists = s.update(entry, null);
-				if (!exists) {
-					Thread updater = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								while (true) {
-									Thread.sleep(5000);
-									updateState(entry);
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					});
-					updater.start();
-				}
+				s.update(entry);
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		s.clean();
 
 		try {
 			c.shutdown().awaitTermination(5, TimeUnit.SECONDS);

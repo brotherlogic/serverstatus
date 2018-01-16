@@ -30,83 +30,80 @@ public class State {
 		return cal;
 	}
 
-	public boolean update(RegistryEntry entry, String special) {
-		Address a = new Address(entry.getIp(), entry.getPort());
-		if (jobs.containsKey(entry.getName())) {
-			jobs.get(entry.getName()).setUptime(a, convertTime(entry.getRegisterTime()), entry.getMaster());
-                        if (special != null && !special.equals(""))
-                          jobs.get(entry.getName()).setSpecial(a, special);
-			return true;
-		} else {
-			jobs.put(entry.getName(), new Job(entry.getName()));
-			jobs.get(entry.getName()).setUptime(a, convertTime(entry.getRegisterTime()), entry.getMaster());
-                        if (special != null && !special.equals(""))
-                          jobs.get(entry.getName()).setSpecial(a, special);
-			return false;
-		}
+	public void update(RegistryEntry entry) {
+		if (!jobs.containsKey(entry.getName())) {
+            jobs.put(entry.getName(), new Job(entry.getName()));
+        }
+		jobs.get(entry.getName()).updateInstance(entry);
 	}
 
 	@Override
 	public String toString() {
 		return jobs.toString();
 	}
-
-	public void clean() {
-		for (Job j : jobs.values())
-			j.clean();
-	}
 }
+
+
 
 class Job {
 	private String jobName;
-	private Map<Address, Calendar> instanceAndUptime;
-	private Map<Address, Long> lastUpdate;
-	private Map<Address, Boolean> masterMap;
-	private Map<Address, String> specialMap;
+	private List<Instance> instances;
 
-	public Job(String name) {
-		jobName = name;
-		instanceAndUptime = new TreeMap<Address, Calendar>();
-		lastUpdate = new TreeMap<Address, Long>();
-		masterMap = new TreeMap<Address, Boolean>();
-		specialMap = new TreeMap<Address, String>();
+	public Job(String name){
+	    jobName = name;
+	    instances = new LinkedList<Instance>();
+    }
+
+    public List<Instance> getInstances() {
+	    return instances;
+    }
+
+    public String getName() {
+	    return jobName;
+    }
+
+    public void updateInstance(RegistryEntry entry) {
+	    boolean found = false;
+	    for (Instance i : instances){
+	        if (i.getEntry().getIp() == entry.getIp() && i.getEntry().getPort() == entry.getPort()) {
+	            found = true;
+	            i.updateInstance(entry);
+            }
+        }
+
+        if (!found) {
+	        instances.add(new Instance(entry));
+        }
+    }
+}
+
+class Instance {
+
+    private RegistryEntry address;
+	private String key;
+
+	public Instance(RegistryEntry entry) {
+		updateInstance(entry);
 	}
 
-	public Collection<Address> getAddresses() {
-		return instanceAndUptime.keySet();
+	public void updateInstance(RegistryEntry entry) {
+	    address = entry;
+    }
+
+	public RegistryEntry getEntry() {
+		return address;
 	}
 
-	public void setUptime(Address addr, Calendar upTime, boolean master) {
-		instanceAndUptime.put(addr, upTime);
-		lastUpdate.put(addr, System.currentTimeMillis());
-		masterMap.put(addr, master);
+	public String getSpecial() {
+		return key;
 	}
 
-	public void setSpecial(Address addr, String special) {
-		if (special == null) {
-			specialMap.remove(addr);
-		} else {
-			specialMap.put(addr, special);
-		}
+	public boolean isMaster() {
+		return getEntry().getMaster();
 	}
 
-	public String getName() {
-		return jobName;
-	}
-
-	public String getSpecial(Address a) {
-		if (specialMap.containsKey(a)) {
-			return specialMap.get(a);
-		}
-		return null;
-	}
-
-	public boolean isMaster(Address a) {
-		return masterMap.get(a);
-	}
-
-	public String getUptime(Address a) {
-		long seconds = (Calendar.getInstance().getTimeInMillis() - instanceAndUptime.get(a).getTimeInMillis()) / 1000;
+	public String getUptime() {
+		long seconds = (Calendar.getInstance().getTimeInMillis()/1000 - getEntry().getRegisterTime());
 
 		if (seconds > 60 * 60 * 24) {
 			return seconds / (60 * 60 * 24) + "d";
@@ -117,43 +114,5 @@ class Job {
 		}
 
 		return "" + seconds;
-	}
-
-	public void clean() {
-		List<Address> addresses = new LinkedList<Address>();
-		for (Address a : lastUpdate.keySet()) {
-			if (System.currentTimeMillis() - lastUpdate.get(a) > 60 * 1000) {
-				addresses.add(a);
-			}
-		}
-
-		for (Address a : addresses) {
-			instanceAndUptime.remove(a);
-			lastUpdate.remove(a);
-			masterMap.remove(a);
-		}
-	}
-}
-
-class Address implements Comparable<Address> {
-	@Override
-	public int compareTo(Address o) {
-		int val = ip.compareTo(o.ip);
-		if (val == 0)
-			val = o.port - port;
-		return val;
-	}
-
-	private String ip;
-	private int port;
-
-	public Address(String ip, int port) {
-		this.ip = ip;
-		this.port = port;
-	}
-
-	@Override
-	public String toString() {
-		return ip + ":" + port;
 	}
 }
