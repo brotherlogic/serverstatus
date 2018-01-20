@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="javaserver-0.50">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/com/github/brotherlogic/javaserver/javaserver/0.50/javaserver-0.50.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
