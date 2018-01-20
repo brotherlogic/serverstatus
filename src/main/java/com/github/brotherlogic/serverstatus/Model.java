@@ -1,67 +1,64 @@
 package com.github.brotherlogic.serverstatus;
 
+import com.github.brotherlogic.javaserver.NetworkObject;
+
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
-import com.github.brotherlogic.javaserver.NetworkObject;
 
 import discovery.Discovery.RegistryEntry;
 import discovery.Discovery.ServiceList;
 import discovery.DiscoveryServiceGrpc;
-import goserver.goserverServiceGrpc;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import java.util.logging.LogManager;
-import java.util.logging.Level;
 
 public class Model extends NetworkObject {
-	State s = new State();
+    State s = new State();
 
-	String bServer;
+    String bServer;
 
-	public Model(String baseServer) {
-		bServer = baseServer;
-	}
+    public Model(String baseServer) {
+        bServer = baseServer;
+    }
 
-	public int getNumberOfJobs() {
-		return s.getNumberOfJobs();
-	}
+    public static void main(String[] args) {
+        Model m = new Model(args[0]);
+        m.update();
+    }
 
-	public Collection<Job> getJobs() {
-		return s.getJobs();
-	}
+    public int getNumberOfJobs() {
+        return s.getNumberOfJobs();
+    }
 
-	public void update() {
-		updateState();
-	}
+    public Collection<Job> getJobs() {
+        return s.getJobs();
+    }
 
+    public void update() {
+        updateState();
+    }
 
-	// Updates the state of the system
-	private void updateState() {
-		ManagedChannel c = dial(bServer, "discovery");
-		DiscoveryServiceGrpc.DiscoveryServiceBlockingStub service = DiscoveryServiceGrpc.newBlockingStub(c)
-				.withDeadlineAfter(1, TimeUnit.SECONDS);
-		try {
-			ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
+    // Updates the state of the system
+    private void updateState() {
+        ManagedChannel c = dial(bServer, "discovery");
+        DiscoveryServiceGrpc.DiscoveryServiceBlockingStub service = DiscoveryServiceGrpc.newBlockingStub(c)
+                .withDeadlineAfter(1, TimeUnit.SECONDS);
+        try {
+            ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
 
-			for (final RegistryEntry entry : serviceList.getServicesList()) {
-				s.update(entry);
-			}
+            long timestamp = System.currentTimeMillis();
+            for (final RegistryEntry entry : serviceList.getServicesList()) {
+                s.update(entry, timestamp);
+            }
+            s.clean(timestamp);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		try {
-			c.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void main(String[] args) {
-		Model m = new Model(args[0]);
-		m.update();
-	}
+        try {
+            c.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
