@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import discovery.Discovery.RegistryEntry;
+import discovery.Discovery.ListRequest;
 import discovery.Discovery.ServiceList;
 import discovery.DiscoveryServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -42,7 +43,7 @@ public class Model extends NetworkObject {
         DiscoveryServiceGrpc.DiscoveryServiceBlockingStub service = DiscoveryServiceGrpc.newBlockingStub(c)
                 .withDeadlineAfter(1, TimeUnit.SECONDS);
         try {
-            ServiceList serviceList = service.listAllServices(discovery.Discovery.Empty.newBuilder().build());
+            ServiceList serviceList = service.listAllServices(discovery.Discovery.ListRequest.newBuilder().build()).getServices();
 
             long timestamp = System.currentTimeMillis();
             for (final RegistryEntry entry : serviceList.getServicesList()) {
