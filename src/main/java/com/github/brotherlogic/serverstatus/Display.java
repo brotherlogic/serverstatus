@@ -27,6 +27,8 @@ public class Display extends JFrame {
 			JPanel panel = new JPanel();
 			panel.setLayout(new GridLayout(0, 1));
 			JLabel label = new JLabel(j.getName());
+			Font f1 = label.getFont().deriveFont(Font.PLAIN, 10);
+			label.setFont(f1);
 			label.setHorizontalAlignment(JLabel.LEFT);
 			panel.add(label);
 
@@ -36,11 +38,12 @@ public class Display extends JFrame {
 					text += " [" + inst.getSpecial() + " ]";
 				}
 				JLabel inLabel = new JLabel(text);
-				Font f = inLabel.getFont();
+				Font f = inLabel.getFont().deriveFont(Font.PLAIN, 10);
+
 				if (inst.isMaster()) {
 					inLabel.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
 				} else {
-					label.setFont(f.deriveFont(f.getStyle() & ~Font.BOLD));
+					inLabel.setFont(f.deriveFont(f.getStyle() & ~Font.BOLD));
 				}
 				inLabel.setHorizontalAlignment(JLabel.RIGHT);
 				panel.add(inLabel);
